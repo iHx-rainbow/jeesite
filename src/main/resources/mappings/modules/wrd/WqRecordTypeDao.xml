@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wrd.dao.WqRecordTypeDao">
+    
+	<sql id="wqRecordTypeColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.description AS "description"
+	</sql>
+	
+	<sql id="wqRecordTypeJoins">
+	</sql>
+    
+	<select id="get" resultType="WqRecordType">
+		SELECT 
+			<include refid="wqRecordTypeColumns"/>
+		FROM wq_record_type a
+		<include refid="wqRecordTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WqRecordType">
+		SELECT 
+			<include refid="wqRecordTypeColumns"/>
+		FROM wq_record_type a
+		<include refid="wqRecordTypeJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WqRecordType">
+		SELECT 
+			<include refid="wqRecordTypeColumns"/>
+		FROM wq_record_type a
+		<include refid="wqRecordTypeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wq_record_type(
+			name,
+			description
+		) VALUES (
+			#{name},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wq_record_type SET 	
+			name = #{name},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wq_record_type
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

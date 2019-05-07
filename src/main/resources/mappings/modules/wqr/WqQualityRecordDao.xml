@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wqr.dao.WqQualityRecordDao">
+    
+	<sql id="wqQualityRecordColumns">
+		a.id AS "id",
+		a.point_id AS "pointId",
+		a.collect_time AS "collectTime",
+		a.cod AS "cod",
+		a.do AS "doo",
+		a.ph AS "ph",
+		a.bod AS "bod",
+		a.temperature AS "temperature",
+		a.nh3 AS "nh3",
+		a.type AS "type"
+	</sql>
+	
+	<sql id="wqQualityRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="WqQualityRecord">
+		SELECT 
+			<include refid="wqQualityRecordColumns"/>
+		FROM wq_quality_record a
+		<include refid="wqQualityRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WqQualityRecord">
+		SELECT 
+			<include refid="wqQualityRecordColumns"/>
+		FROM wq_quality_record a
+		<include refid="wqQualityRecordJoins"/>
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="pointId != null and pointId != ''">
+				AND a.point_id = #{pointId}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WqQualityRecord">
+		SELECT 
+			<include refid="wqQualityRecordColumns"/>
+		FROM wq_quality_record a
+		<include refid="wqQualityRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wq_quality_record(
+			point_id,
+			collect_time,
+			cod,
+			do,
+			ph,
+			bod,
+			temperature,
+			nh3,
+			type
+		) VALUES (
+			#{pointId},
+			#{collectTime},
+			#{cod},
+			#{doo},
+			#{ph},
+			#{bod},
+			#{temperature},
+			#{nh3},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wq_quality_record SET 	
+			point_id = #{pointId},
+			collect_time = #{collectTime},
+			cod = #{cod},
+			do = #{doo},
+			ph = #{ph},
+			bod = #{bod},
+			temperature = #{temperature},
+			nh3 = #{nh3},
+			type = #{type}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wq_quality_record
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
