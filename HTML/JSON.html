@@ -1,0 +1,248 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>地图</title>
+    <link href="http://map.zjditu.cn/vmap/static/mapbox-gl.css" rel="stylesheet">
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /*自定义控件样式*/
+        .menu {
+            position: absolute;
+            margin-top: 0;
+            right: 0;
+            width: 200px;
+            /*height: 200px;    自定义选择栏高度*/
+            background: rgba(255, 255, 255, 0.7);
+            padding-bottom: 8px;
+        }
+
+        .button {
+            float: left;
+            margin-left: 8px;
+            margin-top: 8px;
+        }
+
+        .tool {
+            height: 20px;
+        }
+
+        .checkboxs {
+            margin-top: 20px;
+        }
+
+        .checkbox-span {
+            float: left;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" class="map"></div>
+    <script src="http://map.zjditu.cn/vmap/static/mapbox-gl.js"></script>
+    <!--
+        引入Microsoft CDN的jQuery.js文件
+        最新版本为：https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.js
+    -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.8.0.min.js"></script>
+
+    <div id="menu" class="menu">
+        <div class="tool">
+            <button id="target-hz" class="button">定位至杭州</button>
+            <button id="show" class="button">显示</button>
+            <button id="hide" class="button">隐藏</button>
+        </div>
+        <div id="checkboxs" class="checkboxs">
+        </div>
+    </div>
+
+    <script>
+        var map = new mapboxgl.Map({
+            container: 'map',
+            zoom: 12,
+            center: [120.15, 30.25],
+            renderWorldCopies: false,
+            localIdeographFontFamily: "'黑体','san-serif'",
+            style: 'http://map.zjditu.cn/vtiles/styles/tdt/streets.json'
+        });
+
+        map.addControl(new mapboxgl.NavigationControl({
+            showCompass: true,
+            showZoom: true
+        }), 'bottom-right');
+
+        var JSONObject = {};  //定义JSON对象
+
+        map.on('load', function () {
+            //初始化JSON
+            initJsonData();
+            //初始化Marker控件
+            initMarker();
+            //添加自定义选择栏
+            addCheckbox();
+        })
+
+        function initJsonData() {
+            $.ajax({
+                type: "get",                //请求方式
+                url: "location.json",       //地址，就是json文件的请求路径
+                dataType: "json",           //数据类型可以为 text xml json script jsonp
+                async: false,
+                success: function (data) {  //返回的参数就是 action里面所有的有get和set方法的参数
+                    JSONObject = data;
+                }
+                /*
+                var dataroot = "location.json";
+                $.getJSON(dataroot, function (data) {
+                    JSONObject = data;
+                */
+            });
+        }
+
+        function initMarker() {
+            coordinates = [];
+            var popup = new Array(JSONObject.amount);
+            marker = new Array(JSONObject.amount);
+            for (let index = 0; index < JSONObject.amount; index++) {
+                coordinates.push([JSONObject.location[index].longitude, JSONObject.location[index].latitude]);
+
+                popup[index] = new mapboxgl.Popup()
+                    .setHTML("<h3>" + JSONObject.location[index].name + "</h3>");
+
+                marker[index] = new mapboxgl.Marker()
+                    .setLngLat(coordinates[index])
+                    .setPopup(popup[index])
+                    .addTo(map);
+            }
+            /*
+            let checkboxs = document.getElementsByName("checkbox");
+            for (let i = 0; i < checkboxs.length; i++) {
+                checkboxs[i].addEventListener("click", clickCheckbox);
+            }
+            */
+            /*
+            const el = document.createElement('div');
+            el.className = 'marker';
+            el.innerHTML = "<img id='icon' src='http://www.zjweu.edu.cn/_upload/article/images/5c/db/a107da844e8aa34b01d758679a4c/a4cd81de-debf-4c14-a766-e2f821f3efde.jpg' width=40 height=40 />";
+            //el.style.backgroundImage = 'url(http://www.zjweu.edu.cn/_upload/article/images/5c/db/a107da844e8aa34b01d758679a4c/a4cd81de-debf-4c14-a766-e2f821f3efde.jpg)';
+            el.style.width = '40px';
+            el.style.height = '40px';
+            el.style.borderRadius = '50%';
+
+            marker3 = new mapboxgl.Marker(el)
+                .setLngLat(coordinates[2])
+                .setPopup(popup[2]);
+
+            new mapboxgl.Marker()
+                .setLngLat(coordinates3)
+                .addTo(map);
+
+            marker1.addTo(map);
+            marker2.addTo(map);
+            marker3.addTo(map);
+            */
+        }
+
+        function addCheckbox() {
+            delCheckbox();
+            var div = document.createElement("div");
+            div.setAttribute("id", "checkboxs");
+            div.setAttribute("class", "checkboxs");
+
+            for (let index = 0; index < JSONObject.amount; index++) {
+                var span = document.createElement("span");
+                span.setAttribute("class", "checkbox-span");
+                var checkBox = document.createElement("input");
+                checkBox.setAttribute("type", "checkbox");
+                checkBox.setAttribute("id", index);
+                checkBox.setAttribute("value", JSONObject.location[index].name);
+                checkBox.setAttribute("name", "checkbox");
+                checkBox.setAttribute("checked", true);
+                var text = document.createTextNode(JSONObject.location[index].name);
+                span.appendChild(text);
+                span.insertBefore(checkBox, text);
+
+                checkBox.addEventListener("click", clickCheckbox, false);    //true - 事件句柄在捕获阶段执行
+                span.addEventListener("click", clickZoom, false);           //false - 默认，事件句柄在冒泡阶段执行
+
+                div.appendChild(span);
+            }
+
+            var element = document.getElementById("menu");
+            element.appendChild(div);
+        }
+
+        function delCheckbox() {
+            var parent = document.getElementById("menu");
+            var child = document.getElementById("checkboxs");
+            parent.removeChild(child);
+        }
+
+        function clickCheckbox(e) {
+            //console.log(id);
+            //delCheckbox();
+            e.stopPropagation();
+            var index = e.target.id;
+            if (e.target.checked == false) {
+                marker[index].remove();
+                e.targetchecked = false;
+            } else {
+                marker[index].addTo(map);
+                e.target.checked = true;
+            }
+        }
+
+        //点击缩放
+        function clickZoom(e) {
+            //alert(e.target.firstChild.id);
+            var index = e.target.firstChild.id;
+            var longitude = parseFloat(coordinates[index][0]);
+            var latitude = parseFloat(coordinates[index][1]);
+            //alert(longitude+"+"+latitude);
+            map.fitBounds([[longitude-0.01, latitude-0.01], [longitude+0.01, latitude+0.01]]);
+        }
+
+        document.getElementById('target-hz').addEventListener('click', function () {
+            map.fitBounds([[120.007561, 30.18352], [120.452178, 30.337722]]);
+        })
+
+        document.getElementById('show').addEventListener('click', function () {
+            for (let index = 0; index < JSONObject.amount; index++) {
+                marker[index].addTo(map);
+            }
+            let checkboxs = document.getElementsByName("checkbox");
+            for (let i = 0; i < checkboxs.length; i++) {
+                checkboxs[i].checked = true;
+            }
+        })
+
+        document.getElementById('hide').addEventListener('click', function () {
+            for (let index = 0; index < JSONObject.amount; index++) {
+                marker[index].remove();
+            }
+            let checkboxs = document.getElementsByName("checkbox");
+            for (let i = 0; i < checkboxs.length; i++) {
+                checkboxs[i].checked = false;
+            }
+        })
+
+    </script>
+</body>
+
+</html>
