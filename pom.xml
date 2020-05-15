@@ -81,6 +81,12 @@
 	
 	<!-- 依赖项定义 -->
 	<dependencies>
+		<!-- FASTJSON -->
+		<dependency>
+		    <groupId>com.alibaba</groupId>
+		    <artifactId>fastjson</artifactId>
+		    <version>1.2.47</version>
+		</dependency>
 	
 		<!-- SPRING begin -->
 		<dependency>
