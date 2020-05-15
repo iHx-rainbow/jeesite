@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.auto.dao.WqAutoTyDao">
+    
+	<sql id="wqAutoTyColumns">
+		a.id AS "id",
+		a.zd_name AS "zdName",
+		a.zd_typeid AS "zdTypeid",
+		a.sc_id AS "scId",
+		a.device_id AS "deviceId",
+		a.picture AS "picture"
+	</sql>
+	
+	<sql id="wqAutoTyJoins">
+	</sql>
+    
+	<select id="get" resultType="WqAutoTy">
+		SELECT 
+			<include refid="wqAutoTyColumns"/>
+		FROM wq_auto_ty a
+		<include refid="wqAutoTyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WqAutoTy">
+		SELECT 
+			<include refid="wqAutoTyColumns"/>
+		FROM wq_auto_ty a
+		<include refid="wqAutoTyJoins"/>
+		<where>
+			
+			<if test="zdName != null and zdName != ''">
+				AND a.zd_name = #{zdName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WqAutoTy">
+		SELECT 
+			<include refid="wqAutoTyColumns"/>
+		FROM wq_auto_ty a
+		<include refid="wqAutoTyJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wq_auto_ty(
+			id,
+			zd_name,
+			zd_typeid,
+			sc_id,
+			device_id,
+			picture
+		) VALUES (
+			#{id},
+			#{zdName},
+			#{zdTypeid},
+			#{scId},
+			#{deviceId},
+			#{picture}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wq_auto_ty SET 	
+			zd_name = #{zdName},
+			zd_typeid = #{zdTypeid},
+			sc_id = #{scId},
+			device_id = #{deviceId},
+			picture = #{picture}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wq_auto_ty
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

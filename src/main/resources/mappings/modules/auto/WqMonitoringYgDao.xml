@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.auto.dao.WqMonitoringYgDao">
+    
+	<sql id="wqMonitoringYgColumns">
+		a.id AS "id",
+		a.zd_id AS "zdId.id",
+		a.yg_name AS "ygName",
+		a.data_id AS "dataId",
+		a.situtation_id AS "situtationId"
+	</sql>
+	
+	<sql id="wqMonitoringYgJoins">
+		LEFT JOIN wq_auto_ty b ON b.id = a.zd_id
+	</sql>
+    
+	<select id="get" resultType="WqMonitoringYg">
+		SELECT 
+			<include refid="wqMonitoringYgColumns"/>
+		FROM wq_monitoring_yg a
+		<include refid="wqMonitoringYgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WqMonitoringYg">
+		SELECT 
+			<include refid="wqMonitoringYgColumns"/>
+		FROM wq_monitoring_yg a
+		<include refid="wqMonitoringYgJoins"/>
+		<where>
+			
+			<if test="zdId.id != null and zdId.id != ''">
+				AND a.zd_id = #{zdId.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WqMonitoringYg">
+		SELECT 
+			<include refid="wqMonitoringYgColumns"/>
+		FROM wq_monitoring_yg a
+		<include refid="wqMonitoringYgJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wq_monitoring_yg(
+			id,
+			zd_id,
+			yg_name,
+			data_id,
+			situtation_id
+		) VALUES (
+			#{id},
+			#{zdId.id},
+			#{ygName},
+			#{dataId},
+			#{situtationId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wq_monitoring_yg SET 	
+			zd_id = #{zdId.id},
+			yg_name = #{ygName},
+			data_id = #{dataId},
+			situtation_id = #{situtationId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wq_monitoring_yg
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE zd_id = #{zdId.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>
