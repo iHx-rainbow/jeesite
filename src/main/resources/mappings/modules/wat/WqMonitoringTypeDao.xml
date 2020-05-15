@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wat.dao.WqMonitoringTypeDao">
+    
+	<sql id="wqMonitoringTypeColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.description AS "description"
+	</sql>
+	
+	<sql id="wqMonitoringTypeJoins">
+	</sql>
+    
+	<select id="get" resultType="WqMonitoringType">
+		SELECT 
+			<include refid="wqMonitoringTypeColumns"/>
+		FROM wq_monitoring_type a
+		<include refid="wqMonitoringTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WqMonitoringType">
+		SELECT 
+			<include refid="wqMonitoringTypeColumns"/>
+		FROM wq_monitoring_type a
+		<include refid="wqMonitoringTypeJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WqMonitoringType">
+		SELECT 
+			<include refid="wqMonitoringTypeColumns"/>
+		FROM wq_monitoring_type a
+		<include refid="wqMonitoringTypeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wq_monitoring_type(
+			name,
+			description
+		) VALUES (
+			#{name},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wq_monitoring_type SET 	
+			name = #{name},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wq_monitoring_type
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
